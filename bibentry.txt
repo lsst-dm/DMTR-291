@@ -1,0 +1,9 @@
+% bibentry template for lsst.bib in https://github.com/lsst/lsst-texmf/blob/master/texmf/bibtex/bib/lsst.bib
+
+@DocuShare{DMTR-291,
+   author = { K. Simon Krughoff },
+    title = {DM-503-EFDa},
+     year = 2021,
+    month = Mar,
+   handle = {DMTR-291},
+      url = {https://dmtr-291.lsst.io } }
