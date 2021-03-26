@@ -30,7 +30,7 @@ meta.tex: Makefile .FORCE
 	printf '\\newcommand{\\lsstDocType}{$(DOCTYPE)}\n' >>$@
 	printf '\\newcommand{\\lsstDocNum}{$(DOCNUMBER)}\n' >>$@
 	printf '\\newcommand{\\vcsRevision}{$(GITVERSION)$(GITDIRTY)}\n' >>$@
-	printf '\\newcommand{\\vcsDate}{$(GITDATE)}\n' >>$@
+	printf '\\newcommand{\\vcsdate}{$(GITDATE)}\n' >>$@
 
 
 
