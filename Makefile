@@ -29,7 +29,7 @@ meta.tex: Makefile .FORCE
 	printf '%% GENERATED FILE -- edit this in the Makefile\n' >>$@
 	printf '\\newcommand{\\lsstDocType}{$(DOCTYPE)}\n' >>$@
 	printf '\\newcommand{\\lsstDocNum}{$(DOCNUMBER)}\n' >>$@
-	printf '\\newcommand{\\vcsRevision}{$(GITVERSION)$(GITDIRTY)}\n' >>$@
+	printf '\\newcommand{\\vcsrevision}{$(GITVERSION)$(GITDIRTY)}\n' >>$@
 	printf '\\newcommand{\\vcsdate}{$(GITDATE)}\n' >>$@
 
 
