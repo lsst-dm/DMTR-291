@@ -14,7 +14,7 @@ ifneq "$(GITSTATUS)" ""
 endif
 
 $(DOCNAME).pdf: $(DOCNAME).tex meta.tex acronyms.tex
-	latexmk -bibtex -xelatex -f $(DOCNAME)
+	latexmk -xelatex -f $(DOCNAME)
 
 .FORCE:
 
