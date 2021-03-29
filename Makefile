@@ -1,7 +1,6 @@
 DOCTYPE = DMTR
 DOCNUMBER = 291
 DOCNAME = $(DOCTYPE)-$(DOCNUMBER)
-JOBNAME = $(DOCNAME)
 TEX = $(filter-out $(wildcard *acronyms.tex) , $(wildcard *.tex))
 
 export TEXMFHOME ?= lsst-texmf/texmf
@@ -14,12 +13,8 @@ ifneq "$(GITSTATUS)" ""
 	GITDIRTY = -dirty
 endif
 
-$(JOBNAME).pdf: $(DOCNAME).tex meta.tex acronyms.tex
-	xelatex -jobname=$(JOBNAME) $(DOCNAME)
-	bibtex $(JOBNAME)
-	xelatex -jobname=$(JOBNAME) $(DOCNAME)
-	xelatex -jobname=$(JOBNAME) $(DOCNAME)
-	xelatex -jobname=$(JOBNAME) $(DOCNAME)
+$(DOCNAME).pdf: $(DOCNAME).tex meta.tex acronyms.tex
+	latexmk -bibtex -xelatex -f $(DOCNAME)
 
 .FORCE:
 
