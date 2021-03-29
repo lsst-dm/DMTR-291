@@ -1,0 +1,1 @@
+$maxr_repeat=10
