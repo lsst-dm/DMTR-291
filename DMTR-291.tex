@@ -1,36 +1,1669 @@
-\documentclass[DM,lsstdraft,toc]{lsstdoc}
+% generated from JIRA project LVV
+% using template at /Users/krughoff/lsst_stack/conda/miniconda3-py38_4.9.2/envs/docsteady-env/lib/python3.7/site-packages/docsteady/templates/tpr.latex.jinja2.
+% using docsteady version 2.1
+% Please do not edit -- update information in Jira instead
+\documentclass[dm,lsstdraft,STR,toc]{lsstdoc}
 \usepackage{geometry}
 \usepackage{longtable,booktabs}
 \usepackage{enumitem}
 \usepackage{arydshln}
+\usepackage{attachfile}
+\usepackage{array}
+\usepackage{dashrule}
 
-\input{meta.tex}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
 
+\input meta.tex
+
+\newcommand{\attachmentsUrl}{https://github.com/\gitorg/\lsstDocType-\lsstDocNum/blob/\gitref/attachments}
 \providecommand{\tightlist}{
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
+\setcounter{tocdepth}{4}
+
 \begin{document}
 
-\def\milestoneName{DM-503-EFDa}
-\def\milestoneId{LVV-P78}
+\def\milestoneName{EFD on Summit for M1/M3}
+\def\milestoneId{DM-503-EFDa}
 \def\product{Data Management}
 
 \setDocCompact{true}
 
-\title{LVV-P78 DM-503-EFDa Test Plan and Report}
+\title{DM-503-EFDa: EFD on Summit for M1/M3 Test Plan and Report}
 \setDocRef{\lsstDocType-\lsstDocNum}
 \date{\vcsdate}
-\author{K. Simon Krughoff}
+\author{ Simon Krughoff }
 
 \input{history_and_info.tex}
 
+
 \setDocAbstract{
-This is a stub test report created from a template.
-The content is being prepared.
+This is the test plan and report for
+\textbf{ EFD on Summit for M1/M3} (DM-503-EFDa),
+an LSST milestone pertaining to the Data Management Subsystem.
 }
 
-\verb|\citedsp|: \citedsp{LPM-17, LSE-30}
 
-\bibliography{lsst,lsst-dm,refs,books,refs_ads}
+\maketitle
 
+\section{Introduction}
+\label{sect:intro}
+
+
+\subsection{Objectives}
+\label{sect:objectives}
+
+ The purpose of this test plan is to describe all the necessary
+requirements and infrastructure for successfully testing the Engineering
+Facility Database (EFD) as implemented with Kafka, InfluxDB and
+Chronograf. This plan will describe the prerequisites for beginning a
+test campaign, step by step instructions for each test can and a
+description of the expected results and test
+artifacts.\\[2\baselineskip]NB: The use of the term reliability in this
+document is intended to indicate the number of messages produced
+relative to the number of messages recorded in the EFD. The system shall
+be considered reliable if at least XX\% of produced messages are
+recorded.\\[2\baselineskip]The highest level description of this test
+plan is to run the M1/M3 subsystem in an active state for no less than 5
+contiguous days. During this time, all telemetry produced by the M1/M3
+subsystem will appear in the InfluxDB instance running at the summit
+with latency less than XX second XX\%. The maximum latency shall be less
+than XX seconds. All telemetry shall also be available for interrogation
+by Chronograf on similar time scales. Any gap in telemetry or
+dropped/missing messages will be considered a deviation. Successful
+completion of the test campaign will show that:\\
+
+\begin{enumerate}
+\tightlist
+\item
+  ~users are able to access data ingested in the InfluxDB at the summit
+  in near real time from the Chronograf interface
+\item
+  the latency from message production to ingestion in InfluxDB is less
+  than the nominal limit (XX sec) XX\% of the time and never more than
+  XX seconds
+\item
+  the M1/M3 telemetry is successfully being mirrored to another influxDB
+  instance at the data facility with latency less than XX hour(s)
+\item
+  users are able to access and analyze telemetry data from the M1/M3
+  subsystem from notebooks running in the notebook aspect of the RSP
+  both at the summit and at the data facility\\
+\end{enumerate}
+
+
+
+\subsection{System Overview}
+\label{sect:systemoverview}
+
+ The tests will be carried out from within an instance of the notebook
+aspect of the RSP running at either the summit or the data facility. ~An
+appropriate weekly version of the stack will be chosen.
+
+
+\subsection{Document Overview}
+\label{sect:docoverview}
+
+This document was generated from Jira, obtaining the relevant information from the
+\href{https://jira.lsstcorp.org/secure/Tests.jspa\#/testPlan/LVV-P78}{LVV-P78}
+~Jira Test Plan and related Test Cycles (
+\href{https://jira.lsstcorp.org/secure/Tests.jspa\#/testCycle/LVV-C163}{LVV-C163}
+).
+
+Section \ref{sect:intro} provides an overview of the test campaign, the system under test (\product{}),
+the applicable documentation, and explains how this document is organized.
+Section \ref{sect:testplan} provides additional information about the test plan, like for example the configuration
+used for this test or related documentation.
+Section \ref{sect:personnel} describes the necessary roles and lists the individuals assigned to them.
+
+Section \ref{sect:overview} provides a summary of the test results, including an overview in Table \ref{table:summary},
+an overall assessment statement and suggestions for possible improvements.
+Section \ref{sect:detailedtestresults} provides detailed results for each step in each test case.
+
+The current status of test plan \href{https://jira.lsstcorp.org/secure/Tests.jspa\#/testPlan/LVV-P78}{LVV-P78} in Jira is \textbf{ Draft }.
+
+\subsection{References}
+\label{sect:references}
+\renewcommand{\refname}{}
+\bibliography{lsst,refs,books,refs_ads,local}
+
+
+\newpage
+\section{Test Plan Details}
+\label{sect:testplan}
+
+
+\subsection{Data Collection}
+
+  Observing is not required for this test campaign.
+
+\subsection{Verification Environment}
+\label{sect:hwconf}
+  The environ
+
+  \subsection{Entry Criteria}
+  \begin{enumerate}
+\tightlist
+\item
+  Before beginning this test, as set of viability tests shall be
+  performed. These will show:
+
+  \begin{enumerate}
+  \tightlist
+  \item
+    The system demonstrates reliability (number of recorded
+    messages/number of produced messages) of greater than XX\%
+  \item
+    The typical latency of the system is less than XX sec for a pre
+    defined set of topics
+  \item
+    The summit data is being replicated to the instance at NCSA
+  \item
+    Chronograf is set up and running at both the summit and NCSA
+  \end{enumerate}
+\item
+  The summit network and Kubernetes cluster are performing nominally
+\item
+  The EFD is deployed in the summit Kubernetes cluster
+\item
+  The M1M3 sub-component is reliably producing telemetry via Kafka
+  producers with correct versions of the schema
+\item
+  The notebook aspect of the RSP is deployed in the summit Kubernetes
+  cluster
+\item
+  The summit EFD is reliably replicated to an EFD instance running in a
+  data facility
+\item
+  The notebook aspect of the RSP is deployed in the same data facility
+  as that running the replicated EFD
+\item
+  The most recent version of the EFD client python modules are installed
+  in the various deployed notebook aspects
+\item
+  A requirement test that the system demonstrates reliability of greater
+  than XX\%
+\end{enumerate}
+
+
+
+\subsection{Related Documentation}
+
+
+No additional documentation provided.
+
+
+\subsection{PMCS Activity}
+
+Primavera milestones related to the test campaign:
+\begin{itemize}
+\item DM-503-EFDa
+\end{itemize}
+
+
+\newpage
+\section{Personnel}
+\label{sect:personnel}
+
+The personnel involved in the test campaign is shown in the following table.
+
+{\small
+\begin{longtable}{p{3cm}p{3cm}p{3cm}p{6cm}}
+\hline
+\multicolumn{2}{r}{T. Plan \href{https://jira.lsstcorp.org/secure/Tests.jspa\#/testPlan/LVV-P78}{LVV-P78} owner:} &
+\multicolumn{2}{l}{\textbf{ Simon Krughoff } }\\\hline
+\multicolumn{2}{r}{T. Cycle \href{https://jira.lsstcorp.org/secure/Tests.jspa\#/testCycle/LVV-C163}{LVV-C163} owner:} &
+\multicolumn{2}{l}{\textbf{
+Simon Krughoff }
+} \\\hline
+\textbf{Test Cases} & \textbf{Assigned to} & \textbf{Executed by} & \textbf{Additional Test Personnel} \\ \hline
+\href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2111}{LVV-T2111}
+& {\small Simon Krughoff } & {\small  } &
+\begin{minipage}[]{6cm}
+\smallskip
+{\small  }
+\medskip
+\end{minipage}
+\\ \hline
+\href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2112}{LVV-T2112}
+& {\small Simon Krughoff } & {\small  } &
+\begin{minipage}[]{6cm}
+\smallskip
+{\small  }
+\medskip
+\end{minipage}
+\\ \hline
+\href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2117}{LVV-T2117}
+& {\small Simon Krughoff } & {\small  } &
+\begin{minipage}[]{6cm}
+\smallskip
+{\small  }
+\medskip
+\end{minipage}
+\\ \hline
+\href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2116}{LVV-T2116}
+& {\small Simon Krughoff } & {\small  } &
+\begin{minipage}[]{6cm}
+\smallskip
+{\small  }
+\medskip
+\end{minipage}
+\\ \hline
+\href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2115}{LVV-T2115}
+& {\small Simon Krughoff } & {\small  } &
+\begin{minipage}[]{6cm}
+\smallskip
+{\small  }
+\medskip
+\end{minipage}
+\\ \hline
+\end{longtable}
+}
+
+\newpage
+
+\section{Test Campaign Overview}
+\label{sect:overview}
+
+\subsection{Summary}
+\label{sect:summarytable}
+
+{\small
+\begin{longtable}{p{2cm}cp{2.3cm}p{8.6cm}p{2.3cm}}
+\toprule
+\multicolumn{2}{r}{ T. Plan \href{https://jira.lsstcorp.org/secure/Tests.jspa\#/testPlan/LVV-P78}{LVV-P78}:} &
+\multicolumn{2}{p{10.9cm}}{\textbf{ DM-503-EFDa: EFD on Summit for M1/M3 }} & Draft \\\hline
+\multicolumn{2}{r}{ T. Cycle \href{https://jira.lsstcorp.org/secure/Tests.jspa\#/testCycle/LVV-C163}{LVV-C163}:} &
+\multicolumn{2}{p{10.9cm}}{\textbf{ DM-503-EFDa: EFD on Summit for M1/M3 }} & Not Executed \\\hline
+\textbf{Test Cases} &  \textbf{Ver.} & \textbf{Status} & \textbf{Comment} & \textbf{Issues} \\\toprule
+\href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2111}{LVV-T2111}
+&  1
+& Not Executed &
+\begin{minipage}[]{9cm}
+\smallskip
+
+\medskip
+\end{minipage}
+&   \\\hline
+\href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2112}{LVV-T2112}
+&  1
+& Not Executed &
+\begin{minipage}[]{9cm}
+\smallskip
+
+\medskip
+\end{minipage}
+&   \\\hline
+\href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2117}{LVV-T2117}
+&  1
+& Not Executed &
+\begin{minipage}[]{9cm}
+\smallskip
+
+\medskip
+\end{minipage}
+&   \\\hline
+\href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2116}{LVV-T2116}
+&  1
+& Not Executed &
+\begin{minipage}[]{9cm}
+\smallskip
+
+\medskip
+\end{minipage}
+&   \\\hline
+\href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2115}{LVV-T2115}
+&  1
+& Not Executed &
+\begin{minipage}[]{9cm}
+\smallskip
+
+\medskip
+\end{minipage}
+&   \\\hline
+\caption{Test Campaign Summary}
+\label{table:summary}
+\end{longtable}
+}
+
+\subsection{Overall Assessment}
+\label{sect:overallassessment}
+
+Not yet available.
+
+\subsection{Recommended Improvements}
+\label{sect:recommendations}
+
+Not yet available.
+
+\newpage
+\section{Detailed Test Results}
+\label{sect:detailedtestresults}
+
+\subsection{Test Cycle LVV-C163 }
+
+Open test cycle {\it \href{https://jira.lsstcorp.org/secure/Tests.jspa#/testrun/LVV-C163}{DM-503-EFDa: EFD on Summit for M1/M3}} in Jira.
+
+Test Cycle name: DM-503-EFDa: EFD on Summit for M1/M3\\
+Status: Not Executed
+
+
+
+\subsubsection{Software Version/Baseline}
+Not provided.
+
+\subsubsection{Configuration}
+Not provided.
+
+\subsubsection{Test Cases in LVV-C163 Test Cycle}
+
+\paragraph{ LVV-T2111 - Access to M1/M3 telemetry data in near real time via the Chronograf
+interface }\mbox{}\\
+
+Version \textbf{1}.
+Open  \href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2111}{\textit{ LVV-T2111 } }
+test case in Jira.
+
+Show that users can get access to visualizations in Chronograf with
+telemetry arriving in less than XX seconds from a command run on the DDS
+network.
+
+\textbf{ Preconditions}:\\
+See prerequisites in the Test Plan LVV-P78
+
+Execution status: {\bf Not Executed }
+
+Final comment:\\
+
+
+Detailed steps results:
+
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 1 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Log in to whatever VPNs are necessary to both see Chronograf at the
+summit and the control network necessary for commanding components fo
+the M1/M3 subsystem
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+VPN connects are live
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 2 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Log in to chronograf running at the summit. The endpoint is currently
+\href{https://chronograf-summit-efd.lsst.codes/}{https://chronograf-summit-efd.lsst.codes},
+though \href{https://sqr-034.lsst.io/}{https://sqr-034.lsst.io} shall be
+considered the primary source of truth for service endpoints relating to
+the EFD
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+The browser showing the front page of the chronograf interface
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 3 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Using the ``Explore'' tab in chronograph enter a query that populates
+the graph window for one value: e.g.
+lsst.sal.MTM1M3.forceActuatorData.forceMagnitude. This may change
+depending on what command is given to the subsystem
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+There should be a graph showing a trace of the chosen field over the
+default time window (now() - 1hr)
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 4 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Set the refresh in chronograph to the minimum value (currently 5
+seconds) and adjust the time window to show the past 15 minutes of data.
+Both of these operations are done using buttons immediately above the
+graph window on the right side
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  The trace is now the last 15 minutes and the view refreshes every 5
+  seconds
+\item
+  The query used to produce the trace plot will be captured as an
+  artifact
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 5 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Issue a command to the M1/M3 subsystem to e.g. modify the force
+actuators and confirm the message was successfully sent and acted upon
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  Confirmation that the command was acted upon
+\item
+  This will also include a qualitative description of whether the
+  command produced the expected change in telemetry.
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 6 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Verify new values are showing up in the summit instance of InfluxDB by
+observing that values with newer timestamps are appearing in the
+Chronograf visualization
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+Screenshots or similar documenting dashboards before and after the
+command to M1/M3 is made.
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 7 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Produce a report for the test
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  A document explaining the procedure including the topics monitored,
+  the command issued and the query used to do the visualization
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+
+\paragraph{ LVV-T2112 - Latency from production to ingestion and telemetry can be analyzed via
+notebooks: High and Low Cadence }\mbox{}\\
+
+Version \textbf{1}.
+Open  \href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2112}{\textit{ LVV-T2112 } }
+test case in Jira.
+
+Measure the latency of production to ingestion in the EFD and show it is
+less than XX seconds XX\% of the time.\\
+Show that this analysis can be completed via a notebook running in an
+instance of the notebook aspect of the RSP.
+
+\textbf{ Preconditions}:\\
+See prerequisites in the Test Plan LVV-P78
+
+Execution status: {\bf Not Executed }
+
+Final comment:\\
+
+
+Detailed steps results:
+
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 1 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Log in to whatever VPNs are necessary to access to the summit notebook
+aspect of the RSP
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+VPN connection is active
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 2 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Log in to the summit notebook aspect: https://summit-lsp.lsst.codes/nb\\
+Make sure to choose a recent weekly and a large instance
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+The JupyterLab interface is displayed in the browser
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 3 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Open a notebook:
+
+\begin{enumerate}
+\tightlist
+\item
+  Navigate to the File-\textgreater{}New-\textgreater{}Notebook
+\item
+  When prompted, select the LSST kernel
+\end{enumerate}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+An empty notebook running in the LSST kernel
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 4 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Connect to the summit EFD
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Example Code \\
+{\footnotesize
+from lsst\_efd\_client import EfdClient\\
+efd = EfdClient('summit\_efd')
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+A notebook with an instance of the `EfdClient` configured to talk to the
+summit EFD
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 5 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Choose a topic to query and select a 5 day window of data. The topic and
+window are arbitrary, but it shall be explicit (not relative to now())
+so that it can reproduced. The topic shall be one of high enough cadence
+that there are many measurements for the topic, i.e. not a command or
+log topic that could potentially be very sparsely populated over the 5
+day window. A high cadence, ideally greater than XX Hz, topic will give
+the most precise measurement of the distribution of the latency.
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  A table-like object in memory containing data from the chosen topic
+  and time window.
+\item
+  The window and topic are artifacts to be preserved
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 6 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+\begin{enumerate}
+\tightlist
+\item
+  The total latency is the time from the message being published,
+  private\_sndStamp, and when it is ingested in the influxDB database.
+  Currently the index timestamp is private\_sndStamp There will be an
+  additional field added to the measurement to reflect the ingest
+  timestamp. This may be technically difficult, in which case a subset
+  of topics will have an extra column added by hand for the purpose of
+  this analysis. Care shall also be taken to ensure the messages are in
+  the same (TAI) time system. In the past some CSCs have been reporting
+  TAI and some report UTC. Currently, the difference is 37 seconds.
+\item
+  Compute the total latency by taking the difference of the two columns,
+  arr{[}`timestamp'{]} - arr{[}`private\_sndStamp'{]} (this is where
+  correction for TAI/UTC would be included if necessary). The result
+  shall be in seconds.
+\end{enumerate}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+An array-like object in memory containing the latency in seconds for
+every message in the window
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 7 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Count the number of entries less than XX second(s) and divide that by
+the total number of entries. This value shall be greater than or equal
+to XX.
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  A plot showing a histogram of the latency values indicating the XX\%
+  value.
+\item
+  If the XX\% latency is greater than XX sec, an explanation shall be
+  supplied describing why the latency is higher than expected more often
+  than expected
+\item
+  The plot shall also indicate the maximum latency observed
+\item
+  If the maximum latency is above the nominal maximum (XX sec), an
+  explanation shall be provided
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 8 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Choose a topic to query and select a 5 day window of data. The topic and
+window are arbitrary, but it shall be explicit (not relative to now())
+so that it can reproduced. The topic shall be low latency in order to to
+measure the impact of publishing low and high latency topics
+simultaneously
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  A table-like object in memory containing data from the chosen topic
+  and time window.
+\item
+  The window and topic are artifacts to be preserved
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 9 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+\begin{enumerate}
+\tightlist
+\item
+  The total latency is the time from the message being published,
+  private\_sndStamp, and when it is ingested in the influxDB database.
+  Currently the index timestamp is private\_sndStamp There will be an
+  additional field added to the measurement to reflect the ingest
+  timestamp. This may be technically difficult, in which case a subset
+  of topics will have an extra column added by hand for the purpose of
+  this analysis. Care shall also be taken to ensure the messages are in
+  the same (TAI) time system. In the past some CSCs have been reporting
+  TAI and some report UTC. Currently, the difference is 37 seconds.
+\item
+  Compute the total latency by taking the difference of the two columns,
+  arr{[}`timestamp'{]} - arr{[}`private\_sndStamp'{]} (this is where
+  correction for TAI/UTC would be included if necessary). The result
+  shall be in seconds.
+\end{enumerate}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+An array-like object in memory containing the latency in seconds for
+every message in the window
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 10 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Count the number of entries less than XX second(s) and divide that by
+the total number of entries. This value shall be greater than or equal
+to XX. ~This is intended to show that even when publishing
+simultaneously with high and low cadence topics we still meet the
+latency goal for both topics
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  A plot showing a histogram of the latency values indicating the XX\%
+  value.
+\item
+  If the XX\% latency is greater than XX sec, an explanation shall be
+  supplied describing why the latency is higher than expected more often
+  than expected
+\item
+  The plot shall also indicate the maximum latency observed
+\item
+  If the maximum latency is above the nominal maximum (XX sec), an
+  explanation shall be provided
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 11 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Document the procedure including latency distributions, time window, and
+both high and low cadence topics
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  A document describing the process including the topic chosen and the
+  time window.
+\item
+  The document shall be in the form on a notebook with saved outputs, or
+  an instance of an nbreport.
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+
+\paragraph{ LVV-T2117 - Latency from production to ingestion and telemetry can be analyzed via
+notebooks: Low Cadence }\mbox{}\\
+
+Version \textbf{1}.
+Open  \href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2117}{\textit{ LVV-T2117 } }
+test case in Jira.
+
+Measure the latency of production to ingestion in the EFD and show it is
+less than XX seconds XX\% of the time.\\
+Show that this analysis can be completed via a notebook running in an
+instance of the notebook aspect of the RSP.
+
+\textbf{ Preconditions}:\\
+See prerequisites in the Test Plan LVV-P78
+
+Execution status: {\bf Not Executed }
+
+Final comment:\\
+
+
+Detailed steps results:
+
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 1 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Log in to whatever VPNs are necessary to access to the summit notebook
+aspect of the RSP
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+VPN connection is active
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 2 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Log in to the summit notebook aspect: https://summit-lsp.lsst.codes/nb\\
+Make sure to choose a recent weekly and a large instance
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+The JupyterLab interface is displayed in the browser
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 3 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Open a notebook:
+
+\begin{enumerate}
+\tightlist
+\item
+  Navigate to the File-\textgreater{}New-\textgreater{}Notebook
+\item
+  When prompted, select the LSST kernel
+\end{enumerate}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+An empty notebook running in the LSST kernel
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 4 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Connect to the summit EFD
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Example Code \\
+{\footnotesize
+from lsst\_efd\_client import EfdClient\\
+efd = EfdClient('summit\_efd')
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+A notebook with an instance of the `EfdClient` configured to talk to the
+summit EFD
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 5 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Choose a topic to query and select a 5 day window of data. The topic and
+window are somewhat arbitrary, but it shall be explicit (not relative to
+now()) so that it can reproduced. The topic shall be a low cadence topic
+with reasonably even sampling. ~I.e. not a command or event topic that
+could be very sparse and unevenly sampled. ~The window should be chosen
+specifically to be during a period where high cadence topics are not
+publishing, so as to measure the latency of the low cadence topics on a
+quiet network
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  A table-like object in memory containing data from the chosen topic
+  and time window.
+\item
+  The window and topic are artifacts to be preserved
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 6 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+\begin{enumerate}
+\tightlist
+\item
+  The total latency is the time from the message being published,
+  private\_sndStamp, and when it is ingested in the influxDB database.
+  Currently the index timestamp is private\_sndStamp There will be an
+  additional field added to the measurement to reflect the ingest
+  timestamp. This may be technically difficult, in which case a subset
+  of topics will have an extra column added by hand for the purpose of
+  this analysis. Care shall also be taken to ensure the messages are in
+  the same (TAI) time system. In the past some CSCs have been reporting
+  TAI and some report UTC. Currently, the difference is 37 seconds.
+\item
+  Compute the total latency by taking the difference of the two columns,
+  arr{[}`timestamp'{]} - arr{[}`private\_sndStamp'{]} (this is where
+  correction for TAI/UTC would be included if necessary). The result
+  shall be in seconds.
+\end{enumerate}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+An array-like object in memory containing the latency in seconds for
+every message in the window
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 7 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Count the number of entries less than XX second(s) and divide that by
+the total number of entries. This value shall be greater than or equal
+to XX.
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  A plot showing a histogram of the latency values indicating the XX\%
+  value.
+\item
+  If the XX\% latency is greater than XX sec, an explanation shall be
+  supplied describing why the latency is higher than expected more often
+  than expected
+\item
+  The plot shall also indicate the maximum latency observed
+\item
+  If the maximum latency is above the nominal maximum (XX sec), an
+  explanation shall be provided
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 8 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Document the procedure including latency distributions, time window, and
+topics
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  A document describing the process including the topic chosen and the
+  time window.
+\item
+  The document shall be in the form on a notebook with saved outputs, or
+  an instance of an nbreport.
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+
+\paragraph{ LVV-T2116 - Verify telemetry is uninterrupted for 5 days and can be analyzed via a
+notebook at NCSA }\mbox{}\\
+
+Version \textbf{1}.
+Open  \href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2116}{\textit{ LVV-T2116 } }
+test case in Jira.
+
+Test that telemetry is being recorded without missing messages for 5
+days. ~This analysis is to be carried out using NCSA infrastructure.
+
+\textbf{ Preconditions}:\\
+
+
+Execution status: {\bf Not Executed }
+
+Final comment:\\
+
+
+Detailed steps results:
+
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 1 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Log in to whatever VPNs are necessary to access to the NCSA notebook
+aspect of the RSP
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+VPN connection is active
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 2 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Log in to the NCSA notebook aspect:
+https://lsst-lsp-stable.ncsa.illinois.edu/nb/\\
+Make sure to choose a recent weekly and a large instance
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+The JupyterLab interface is displayed in the browser
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 3 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Open a notebook:
+
+\begin{enumerate}
+\tightlist
+\item
+  Navigate to the File-\textgreater{}New-\textgreater{}Notebook
+\item
+  When prompted, select the LSST kernel
+\end{enumerate}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+An empty notebook running in the LSST kernel
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 4 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Connect to the NCSA EFD\\
+Note:The efd identifier is yet to be determined, but shall be ldf\_efd
+or similar.
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Example Code \\
+{\footnotesize
+from lsst\_efd\_client import EfdClient\\
+efd = EfdClient('ldf\_efd')
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+A notebook with an instance of the `EfdClient` configured to talk to the
+NCSA EFD
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 5 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Choose a topic to query and select a 5 day window of data. The window is
+arbitrary, but must be explicit (not relative to now()) so that it can
+be reproduced. Note that command topics shall be avoided for this
+purpose since the semantics of private\_seqNum are different in the
+context of commands than for other topic types
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+A time window and topic name that will be queried for the sequence
+number
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 6 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Care shall be taken to fix up the id column, private\_seqNum. It must be
+monotonically increasing, but gets reset when the CSC is restarted. When
+this happens an offset must be applied to the rest of the message ids in
+order to produce a monotonically increasing sequence
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+A table-like object in memory with monotonically increasing message
+numbers
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 7 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Compute the difference between message ids via diff =
+arr{[}`private\_seqNum'{]}{[}1:{]} - arr{[}`private\_seqNum'{]}{[}:-1{]}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+A histogram normalized to the total number of samples from 1 to the
+maximum number of the array diff.
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 8 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Confirm that all values are one. Any larger numbers would indicate a gap
+in messages
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+The result is that all differences in the histogram should be 1. Any
+values larger than 1, which indicates a gap in messages, must be traced
+to a problem with the CSC and not an issue with the EFD.
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 9 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Produce a report outlining this test
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  A document describing the process including which topics/fields where
+  used and what time window was selected.
+\item
+  The document shall be in the form of a notebook with saved outputs, or
+  an instance of an nbreport
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+
+\paragraph{ LVV-T2115 - Verify telemetry is uninterrupted for 5 days and can be analyzed via a
+notebook at the summit }\mbox{}\\
+
+Version \textbf{1}.
+Open  \href{https://jira.lsstcorp.org/secure/Tests.jspa#/testCase/LVV-T2115}{\textit{ LVV-T2115 } }
+test case in Jira.
+
+Test that telemetry is being recorded without missing messages for 5
+days. ~This analysis is to be carried out using summit infrastructure.
+
+\textbf{ Preconditions}:\\
+
+
+Execution status: {\bf Not Executed }
+
+Final comment:\\
+
+
+Detailed steps results:
+
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 1 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Log in to whatever VPNs are necessary to access to the summit notebook
+aspect of the RSP
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+VPN connection is active
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 2 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Log in to the summit notebook aspect: https://summit-lsp.lsst.codes/nb\\
+Make sure to choose a recent weekly and a large instance
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+The JupyterLab interface is displayed in the browser
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 3 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Open a notebook:
+
+\begin{enumerate}
+\tightlist
+\item
+  Navigate to the File-\textgreater{}New-\textgreater{}Notebook
+\item
+  When prompted, select the LSST kernel
+\end{enumerate}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+An empty notebook running in the LSST kernel
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 4 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Connect to the summit EFD
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Example Code \\
+{\footnotesize
+from lsst\_efd\_client import EfdClient\\
+efd = EfdClient('summit\_efd')
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+A notebook with an instance of the `EfdClient` configured to talk to the
+summit EFD
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 5 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Choose a topic to query and select a 5 day window of data. The window is
+arbitrary, but must be explicit (not relative to now()) so that it can
+be reproduced. Note that command topics shall be avoided for this
+purpose since the semantics of private\_seqNum are different in the
+context of commands than for other topic types
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+A time window and topic name that will be queried for the sequence
+number
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 6 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Care shall be taken to fix up the id column, private\_seqNum. It must be
+monotonically increasing, but gets reset when the CSC is restarted. When
+this happens an offset must be applied to the rest of the message ids in
+order to produce a monotonically increasing sequence
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+A table-like object in memory with monotonically increasing message
+numbers
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 7 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Compute the difference between message ids via diff =
+arr{[}`private\_seqNum'{]}{[}1:{]} - arr{[}`private\_seqNum'{]}{[}:-1{]}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+A histogram normalized to the total number of samples from 1 to the
+maximum number of the array diff.
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 8 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Confirm that all values are one. Any larger numbers would indicate a gap
+in messages
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+The result is that all differences in the histogram should be 1. Any
+values larger than 1, which indicates a gap in messages, must be traced
+to a problem with the CSC and not an issue with the EFD.
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+\begin{tabular}{p{2cm}p{14cm}}
+\toprule
+Step 9 & Step Execution Status: \textbf{ Not Executed } \\ \hline
+\end{tabular}
+ Description \\
+{\footnotesize
+Produce a report outlining this test
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Expected Result \\
+{\footnotesize
+\begin{itemize}
+\tightlist
+\item
+  A document describing the process including which topics/fields where
+  used and what time window was selected.
+\item
+  The document shall be in the form of a notebook with saved outputs, or
+  an instance of an nbreport
+\end{itemize}
+
+}
+\hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
+  Actual Result \\
+{\footnotesize
+
+}
+
+
+
+\input{appendix.tex}
 \end{document}
