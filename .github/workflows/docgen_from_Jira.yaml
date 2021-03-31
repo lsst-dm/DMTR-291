@@ -33,14 +33,14 @@ jobs:
         run: |
           source ${CONDA}/bin/activate docsteady-env
           docsteady --namespace dm generate-tpr LVV-P78 DMTR-291.tex
-          echo `ls -la DMTR-291.tex`
         shell: bash
  
       - name: Create commit
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git commit --allow-empty -m "Update from JIRA " DMTR-291.tex 
+          git commit --allow-empty -m "Update from JIRA " DMTR-291.tex DMTR-291.appendix.tex
+          git push
       - name: TeX build
         run: |
           docker run --rm -v `pwd`:/workspace -w /workspace lsstsqre/lsst-texmf:latest sh -c 'make'
