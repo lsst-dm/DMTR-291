@@ -104,8 +104,8 @@ completion of the test campaign will show that:\\
 \label{sect:systemoverview}
 
  The tests will be carried out from within an instance of the notebook
-aspect of the RSP running at either the summit or the data facility.
-Â~An appropriate weekly version of the stack will be chosen.
+aspect of the RSP running at either the summit or the data facility. An
+appropriate weekly version of the stack will be chosen.
 
 
 \subsection{Document Overview}
@@ -146,7 +146,11 @@ The current status of test plan \href{https://jira.lsstcorp.org/secure/Tests.jsp
 
 \subsection{Verification Environment}
 \label{sect:hwconf}
-  The environ
+  The environment will be largely within notebooks running a modern stack,
+though for the first test case and interactive environment is necessary.
+~In that case commands will be executed with a notebook. ~The results of
+those commands will be viewed in the summit version of the chronograf
+interface.
 
   \subsection{Entry Criteria}
   \begin{enumerate}
@@ -927,7 +931,7 @@ total number of entries. This value shall be greater than or equal to
 \hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
   Actual Result \\
 {\footnotesize
-\includegraphics[width=4.5in]{jira_imgs/1842.png}The attached plot
+\includegraphics[width=3.73958in]{jira_imgs/1842.png}The attached plot
 shows the distribution of latency as a function of time over the 5 days
 on the left and shows the distribution of latency values on the right.
 The bars are the gaps. Data from those regions was excluded. The median,
@@ -1646,7 +1650,7 @@ maximum number of the array diff.
 \hdashrule[0.5ex]{\textwidth}{1pt}{3mm}
   Actual Result \\
 {\footnotesize
-\includegraphics[width=3.12500in]{jira_imgs/1855.png}4The histogram does
+\includegraphics[width=4.5in]{jira_imgs/1855.png}4The histogram does
 indeed show that all elements end up in the bin containing the value 1.
 Even more convincing is that when asking if all the elements in the
 pairwise difference array are 1, the answer is ``yes'' (see cell
